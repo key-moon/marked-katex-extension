@@ -1,6 +1,13 @@
 import katex from 'katex';
 
-const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n\$]))\1(?=[\s?!\.,:？！。，：]|$)/;
+const cjkPunctuation = '、。，．・！？（）｟｠「」『』｛｝［］〔〕〘〙〈〉《》【】〖〗｜：';
+
+function replacePlaceholder(regexp) {
+  return new RegExp(regexp.source.replace('CJK_PUNCTUATION', cjkPunctuation));
+}
+
+const inlineStartRule = replacePlaceholder(/(?<=[CJK_PUNCTUATION\s]|^)\${1,2}(?!\$)/);
+const inlineRule = replacePlaceholder(/^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n\$]))\1(?=[\s?!\.,:CJK_PUNCTUATION]|$)/);
 const blockRule = /^(\${1,2})\n((?:\\[^]|[^\\])+?)\n\1(?:\n|$)/;
 
 export default function(options = {}) {
@@ -30,7 +37,8 @@ function inlineKatex(options, renderer) {
           return;
         }
 
-        if (index === 0 || indexSrc.charAt(index - 1) === ' ') {
+        const startMatch = indexSrc.match(inlineStartRule);
+        if (startMatch && startMatch.index === index) {
           const possibleKatex = indexSrc.substring(index);
 
           if (possibleKatex.match(inlineRule)) {

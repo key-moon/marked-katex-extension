@@ -128,6 +128,9 @@ $$
 This is not katex since there is no blank line above it.
 It is part of the previous paragraph.
 $$
+`,
+    'allow no break between cjk punctuations and inline katex': `
+$a$、$b$。$c$，$d$．$e$・$f$！$g$？$h$（$i$）$j$：$k$
 `
   };
 
